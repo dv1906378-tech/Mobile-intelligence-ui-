@@ -1,1 +1,75 @@
 
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mobile Intelligence Terminal</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    background:#001006;
+    color:#00ff55;
+    font-family:"Courier New",monospace;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.15;
+    background:
+    linear-gradient(#00ff5522 1px,transparent 1px),
+    linear-gradient(90deg,#00ff5522 1px,transparent 1px);
+    background-size:25px 25px;
+}
+
+.container{
+    width:92%;
+    max-width:650px;
+    margin:30px auto;
+    border:1px solid #00ff55;
+    box-shadow:0 0 20px #00ff5533;
+    background:#001508;
+    position:relative;
+}
+
+.container::before,
+.container::after{
+    content:"";
+    position:absolute;
+    width:35px;
+    height:35px;
+    border-color:#00ff55;
+    border-style:solid;
+}
+
+.container::before{
+    top:-1px;
+    left:-1px;
+    border-width:3px 0 0 3px;
+}
+
+.container::after{
+    bottom:-1px;
+    right:-1px;
+    border-width:0 3px 3px 0;
+}
+
+.top{
+    padding:25px 22px 12px;
+    border-bottom:1px solid #00ff5533;
+}
+
+.status{
+    font-size:11
