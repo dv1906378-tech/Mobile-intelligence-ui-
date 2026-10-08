@@ -1,75 +1,290 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Mobile Intelligence Terminal</title>
+<title>Voice AI Assistant</title>
 
 <style>
 *{
     box-sizing:border-box;
-    margin:0;
-    padding:0;
 }
 
 body{
-    background:#001006;
-    color:#00ff55;
-    font-family:"Courier New",monospace;
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#0f172a;
+    color:white;
     min-height:100vh;
-    overflow-x:hidden;
-}
-
-body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    opacity:.15;
-    background:
-    linear-gradient(#00ff5522 1px,transparent 1px),
-    linear-gradient(90deg,#00ff5522 1px,transparent 1px);
-    background-size:25px 25px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
 .container{
-    width:92%;
-    max-width:650px;
-    margin:30px auto;
-    border:1px solid #00ff55;
-    box-shadow:0 0 20px #00ff5533;
-    background:#001508;
-    position:relative;
+    width:95%;
+    max-width:500px;
+    background:#1e293b;
+    padding:25px;
+    border-radius:25px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.4);
 }
 
-.container::before,
-.container::after{
-    content:"";
-    position:absolute;
-    width:35px;
-    height:35px;
-    border-color:#00ff55;
-    border-style:solid;
-}
-
-.container::before{
-    top:-1px;
-    left:-1px;
-    border-width:3px 0 0 3px;
-}
-
-.container::after{
-    bottom:-1px;
-    right:-1px;
-    border-width:0 3px 3px 0;
-}
-
-.top{
-    padding:25px 22px 12px;
-    border-bottom:1px solid #00ff5533;
+h1{
+    margin-bottom:5px;
 }
 
 .status{
-    font-size:11
+    color:#94a3b8;
+    margin-bottom:25px;
+}
+
+.mic{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    border:none;
+    background:#2563eb;
+    color:white;
+    font-size:45px;
+    cursor:pointer;
+    box-shadow:0 0 25px rgba(37,99,235,.5);
+}
+
+.mic:active{
+    transform:scale(.95);
+}
+
+#userText,
+#aiText{
+    margin-top:20px;
+    padding:15px;
+    border-radius:15px;
+    text-align:left;
+    min-height:50px;
+}
+
+#userText{
+    background:#334155;
+}
+
+#aiText{
+    background:#172554;
+}
+
+input{
+    width:100%;
+    margin-top:20px;
+    padding:14px;
+    border-radius:12px;
+    border:none;
+    font-size:16px;
+}
+
+button.ask{
+    margin-top:10px;
+    padding:12px 25px;
+    border:none;
+    border-radius:10px;
+    background:#16a34a;
+    color:white;
+    font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🤖 Voice AI</h1>
+
+<div class="status" id="status">
+Ready
+</div>
+
+<button class="mic" onclick="startListening()">🎤</button>
+
+<div id="userText">
+आप: —
+</div>
+
+<div id="aiText">
+AI: नमस्ते! मुझसे बात करने के लिए माइक दबाइए।
+</div>
+
+<input
+    type="text"
+    id="textInput"
+    placeholder="या यहाँ अपना सवाल लिखें..."
+>
+
+<button class="ask" onclick="askText()">
+पूछें
+</button>
+
+</div>
+
+
+<script>
+
+const statusText = document.getElementById("status");
+const userText = document.getElementById("userText");
+const aiText = document.getElementById("aiText");
+
+
+// बोलकर सवाल सुनना
+function startListening(){
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if(!SpeechRecognition){
+
+        aiText.innerHTML =
+        "AI: आपके browser में Voice Recognition उपलब्ध नहीं है। Chrome इस्तेमाल करें।";
+
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "hi-IN";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    statusText.innerHTML = "🎤 सुन रहा हूँ...";
+
+    recognition.start();
+
+    recognition.onresult = function(event){
+
+        const text =
+        event.results[0][0].transcript;
+
+        userText.innerHTML =
+        "आप: " + text;
+
+        statusText.innerHTML =
+        "Processing...";
+
+        answer(text);
+    };
+
+    recognition.onerror = function(){
+
+        statusText.innerHTML =
+        "Voice error";
+
+        aiText.innerHTML =
+        "AI: आवाज़ समझ नहीं आई। दोबारा कोशिश करें।";
+    };
+
+    recognition.onend = function(){
+
+        statusText.innerHTML =
+        "Ready";
+    };
+}
+
+
+// Text से सवाल
+function askText(){
+
+    const text =
+    document.getElementById("textInput").value;
+
+    if(text.trim() === ""){
+        return;
+    }
+
+    userText.innerHTML =
+    "आप: " + text;
+
+    answer(text);
+}
+
+
+// Basic AI response
+function answer(question){
+
+    question =
+    question.toLowerCase();
+
+    let response = "";
+
+    if(question.includes("नमस्ते") ||
+       question.includes("hello") ||
+       question.includes("hii")){
+
+        response =
+        "नमस्ते! मैं आपका Voice AI Assistant हूँ।";
+    }
+
+    else if(question.includes("नाम")){
+
+        response =
+        "मेरा नाम Voice AI है।";
+    }
+
+    else if(question.includes("कैसे हो")){
+
+        response =
+        "मैं बिल्कुल ठीक हूँ। आप कैसे हैं?";
+    }
+
+    else if(question.includes("समय")){
+
+        response =
+        "अभी समय " +
+        new Date().toLocaleTimeString("hi-IN");
+    }
+
+    else if(question.includes("तारीख")){
+
+        response =
+        "आज की तारीख " +
+        new Date().toLocaleDateString("hi-IN");
+    }
+
+    else if(question.includes("github")){
+
+        response =
+        "GitHub पर आप अपनी वेबसाइट और code को host कर सकते हैं।";
+    }
+
+    else{
+
+        response =
+        "आपने पूछा: " +
+        question +
+        ". अभी मेरा basic AI mode चालू है।";
+    }
+
+    aiText.innerHTML =
+    "AI: " + response;
+
+    speak(response);
+}
+
+
+// AI की आवाज
+function speak(text){
+
+    const speech =
+    new SpeechSynthesisUtterance(text);
+
+    speech.lang = "hi-IN";
+    speech.rate = 0.95;
+    speech.pitch = 1;
+
+    window.speechSynthesis.speak(speech);
+}
+
+</script>
+
+</body>
+</html>
