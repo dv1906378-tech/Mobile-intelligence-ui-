@@ -288,3 +288,30 @@ function speak(text){
 
 </body>
 </html>
+async function answer(question) {
+    aiText.innerHTML = "AI: सोच रहा हूँ...";
+
+    try {
+        const response = await fetch("YOUR_BACKEND_URL", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: question
+            })
+        });
+
+        const data = await response.json();
+
+        const reply = data.reply || "कोई जवाब नहीं मिला।";
+
+        aiText.innerHTML = "AI: " + reply;
+        speak(reply);
+
+    } catch (error) {
+        console.error(error);
+        aiText.innerHTML =
+            "AI: AI engine से connection नहीं हो पाया।";
+    }
+}
